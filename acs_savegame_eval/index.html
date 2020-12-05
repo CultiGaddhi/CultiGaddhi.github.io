@@ -31,7 +31,7 @@
     <div id="drop" style="width: 100%; height: 100%;">
       <div>
         <h1>Amazing Cultivator Simulator Save Game Analyzer</h1>
-        <p>Compatible with savegames of game version 1.0 and later.<br>&copy; 2020 by Gaddhi, This work is licensed under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons BY-NC-SA 4.0</a>.</p>
+        <p>Compatible with savegames of game version 1.0 and later.<br>&copy; 2020 by Gaddhi, This work is licensed under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons BY-NC-SA 4.0</a>. Feedback is welcome on <a href="https://github.com/CultiGaddhi/CultiGaddhi.github.io/issues">github</a> or via <a href="https://discord.gg/MwmYaXjx">ACS Discord</a> user Gaddhi#8937</p>
         <h3>Usage: Drag savegame from file-explorer and drop it anywhere on this page.</h3>
         <p>
           The table will automatically be filled with the number of tiles of the terrain and the number of rocks, that are visible on the map.
@@ -128,8 +128,8 @@
         Object.keys(res2).forEach((k) => {
           res[k] = res2[k];
         });
-
         display_table_row(display_def.map((dis) => {return res[dis.id];}));
+        console.log(res);
       }
 
       function display_table_row(re) {
@@ -137,6 +137,9 @@
         var row = table.insertRow(-1);
         re.forEach((txt) => {
           var c = row.insertCell(-1);
+          if (typeof txt == 'undefined') {
+            txt = 0;
+          }
           c.innerHTML = txt;
         })
       }
