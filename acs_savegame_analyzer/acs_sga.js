@@ -1,3 +1,7 @@
+// acs_sga.js
+// 2020 by Gaddhi, This work is licensed under Creative Commons BY-NC-SA 4.0 license
+// Feedback is welcome on https://github.com/CultiGaddhi/CultiGaddhi.github.io/issues or via ACS Discord user Gaddhi#8937 (https://discord.gg/MwmYaXjx)
+
 var drop = document.getElementById('drop');
 var display_def = [
   {'id': 'file', 'dis': 'Savegame'},
