@@ -25,14 +25,23 @@
       td {
         padding: 2px;
       }
+      .remarkable {
+        background-color: #d16a3a;
+      }
+      .veryremarkable {
+        background-color: #db0e5d;
+      }
+      .top {
+        background-color: #0e90db;
+      }
     </style>
   </head>
   <body>
     <div id="drop" style="width: 100%; height: 100%;">
       <div>
-        <h1>Amazing Cultivator Simulator Save Game Analyzer</h1>
+        <h1>Amazing Cultivation Simulator Save Game Analyzer</h1>
         <p>Compatible with savegames of game version 1.0 and later.<br>&copy; 2020 by Gaddhi, This work is licensed under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons BY-NC-SA 4.0</a>. Feedback is welcome on <a href="https://github.com/CultiGaddhi/CultiGaddhi.github.io/issues">github</a> or via <a href="https://discord.gg/MwmYaXjx">ACS Discord</a> user Gaddhi#8937</p>
-        <h3>Usage: Drag savegame from file-explorer and drop it anywhere on this page.</h3>
+        <h3>Usage: Drag savegame(s) from file-explorer and drop it anywhere on this page.</h3>
         <p>
           The table will automatically be filled with the number of tiles of the terrain and the number of rocks, that are visible on the map.
         </p>
@@ -44,105 +53,7 @@
       </table>
     </div>
     <script>
-      var drop = document.getElementById('drop');
-      var display_def = [
-        {'id': 'file', 'dis': 'Savegame'},
-        {'id': 'seed', 'dis': 'Seed'},
-        {'id': 'size', 'dis': 'Size'},
-        {'id': 'LingSoil', 'dis': 'Spirit Soil'},
-        {'id': 'SilverOre', 'dis': 'Ice Crystal'},
-        {'id': 'CopperOre', 'dis': 'Igneocopper'},
-        {'id': 'RockCinnabar', 'dis': 'Cinnabar'},
-        {'id': 'Darksteel', 'dis': 'Darksteel'},
-        {'id': 'RockJade', 'dis': 'Jade'},
-        {'id': 'TreeGinkgo_Big', 'dis': 'Huge Ginkgo'},
-        {'id': 'FertileSoil', 'dis': 'Fertile Soil'},
-      ];
-      display_table_row(display_def.map((r) => { return r.dis }));
-
-      drop.addEventListener('dragover', function(e) {
-        e.stopPropagation();
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'copy';
-      });
-
-      drop.addEventListener('drop', function(e) {
-        e.stopPropagation();
-        e.preventDefault();
-        var files = e.dataTransfer.files; // Array of all files
-
-        for (var i=0, file; file=files[i]; i++) {
-          if (file.name.match(/.save$/)) {
-            var reader = new FileReader();
-
-            reader.onload = (function(file_inner) {
-              return function(e2) {
-                handle_savegame(e2.target.result, file_inner);
-              };
-            })(file.name.slice(0,-5));
-            
-            reader.readAsText(file); // start reading the file data.
-          } else {
-            console.log("Filetype not recognized. Must be a \".save\": " + file.name);
-          }
-        }
-      });
-
-      function handle_savegame(text, filename) {
-        var res = {};
-
-        // parse data as JSON
-        var index = text.indexOf('{');
-        text = text.slice(index);
-        var data = JSON.parse(text); 
-
-        // extract globals
-        res.seed = data.World.world.map['Seed|F'];
-        res.size = data.World.world.map['Size|P'];
-        res.file = filename;
-
-        // extract terrain
-        var terrain = data.World.world.map['Terrain|F']._hd.Top;
-        var keys = Object.keys(terrain);
-        keys.forEach((key) => {
-          res[key] = terrain[key].length;
-        });
-
-        // extract things part 1
-        var res2 = {};
-        var things = data.World.thing.SmallPlants;
-        keys = Object.keys(things);
-        keys.forEach((key) => {
-          res2[key] = things[key].length;
-        });
-
-        // extract things part 2
-        var things = data.World.thing.Things;
-        things.forEach((thing) => {
-          var n = thing['def|P'].N;
-          if (! (n in res2)) {
-            res2[n] = 0;
-          }
-          res2[n]++;
-        });
-        Object.keys(res2).forEach((k) => {
-          res[k] = res2[k];
-        });
-        display_table_row(display_def.map((dis) => {return res[dis.id];}));
-        console.log(res);
-      }
-
-      function display_table_row(re) {
-        var table = document.getElementById('ta');
-        var row = table.insertRow(-1);
-        re.forEach((txt) => {
-          var c = row.insertCell(-1);
-          if (typeof txt == 'undefined') {
-            txt = 0;
-          }
-          c.innerHTML = txt;
-        })
-      }
     </script>
-  </body>
+    <script src="acs_sga.js"></script> 
+    </body>
 </html>
