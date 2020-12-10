@@ -142,7 +142,7 @@ function draw_map(canvas, data)
     'ShallowWater': '#869fa4',
     'DepthWater': '#627b85',
     'DepthDepthWater': '#617a84',
-    'StoneLand': '#806e43',
+    'StoneLand': '#9e8b5d',
     'FertileSoil': '#958d54',
     'WetLand': '#786143',
   };
