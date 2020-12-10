@@ -122,12 +122,13 @@ function display_table_row(re) {
       var canvas = document.createElement('canvas');
       draw_map(canvas, element);
       c.appendChild(canvas);
+      canvas.addEventListener("click", save_map);
+      canvas.classList.add('hoverpic');
     }
   })
 }
 
-function draw_map(canvas, data)
-{
+function draw_map(canvas, data) {
   var size = data.World.world.map['Size|P'];
   canvas.width  = size;
   canvas.height = size;
@@ -152,11 +153,7 @@ function draw_map(canvas, data)
   terrainnames.forEach((terrainname) => {
     var color = colortrans[terrainname];
     if (typeof color == 'string') {
-      var color2 = [
-        parseInt(color.substr(1, 2), 16),
-        parseInt(color.substr(3, 2), 16),
-        parseInt(color.substr(5, 2), 16)
-      ];
+      var color2 = color_to_values(color);
       terrain[terrainname].forEach((coord) => {
         put_color(img.data, coord, color2, size);
       })
@@ -166,27 +163,22 @@ function draw_map(canvas, data)
   });
 
   // handle drawing of mountains
-  var color = '#443d2f';
-  var color2 = [
-    parseInt(color.substr(1, 2), 16),
-    parseInt(color.substr(3, 2), 16),
-    parseInt(color.substr(5, 2), 16)
-  ];
   var mountains = {
-    'CopperOre': 1,
-    'Darksteel': 1,
-    'IronOre': 1,
-    'RockBrown': 1,
-    'RockCinnabar': 1,
-    'RockGray': 1,
-    'RockJade': 1,
-    'RockMarble': 1,
-    'SilverOre': 1,
+    'CopperOre': color_to_values('#be5888'),
+    'Darksteel': color_to_values('#443d2f'),
+    'IronOre': color_to_values('#443d2f'),
+    'RockBrown': color_to_values('#443d2f'),
+    'RockCinnabar': color_to_values('#443d2f'),
+    'RockGray': color_to_values('#443d2f'),
+    'RockJade': color_to_values('#443d2f'),
+    'RockMarble': color_to_values('#443d2f'),
+    'SilverOre': color_to_values('#7a71cf'),
   };
   var things = data.World.thing.Things;
   things.forEach((thing) => {
-    if (thing['def|P'].N in mountains) {
-      put_color(img.data, thing['_hd']['Ns'][2], color2, size);
+    var name = thing['def|P'].N;
+    if (name in mountains) {
+      put_color(img.data, thing['_hd']['Ns'][2], mountains[name], size);
     }
   });
   var things = data.World.thing.SmallPlants;
@@ -194,7 +186,7 @@ function draw_map(canvas, data)
   keys.forEach((key) => {
     if (key in mountains) {
       things[key].forEach((coord) => {
-        put_color(img.data, coord, color2, size);
+        put_color(img.data, coord, mountains[key], size);
       });
     }
   });
@@ -228,8 +220,7 @@ function draw_map(canvas, data)
   });
 }
 
-function put_color(data, coord, color, size)
-{
+function put_color(data, coord, color, size) {
   var x = coord % size;
   var y = 191-Math.floor(coord / size);
   var index = (size * y + x) * 4;
@@ -237,4 +228,27 @@ function put_color(data, coord, color, size)
   data[index+1] = color[1];
   data[index+2] = color[2];
   data[index+3] = 255;
+}
+
+function save_map(seed) {
+
+  var pic = this.toDataURL();
+  // create temporary link  
+  var tmpLink = document.createElement( 'a' );  
+  var seed = this.parentElement.parentElement.children[1].innerHTML;
+  tmpLink.download = seed + '.png'; // set the name of the download file 
+  tmpLink.href = pic;
+  
+  // temporarily add link to body and initiate the download  
+  document.body.appendChild( tmpLink );  
+  tmpLink.click();  
+  document.body.removeChild( tmpLink );
+}
+
+function color_to_values(color) {
+  return [
+    parseInt(color.substr(1, 2), 16),
+    parseInt(color.substr(3, 2), 16),
+    parseInt(color.substr(5, 2), 16)
+  ];
 }
