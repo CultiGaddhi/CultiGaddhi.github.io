@@ -15,6 +15,7 @@ var display_def = [
 //  {'id': 'RockJade', 'dis': 'Jade'},
   {'id': 'TreeGinkgo_Big', 'dis': 'Huge Ginkgo'},
 //  {'id': 'FertileSoil', 'dis': 'Fertile Soil'},
+  {'id': 'MONSTER', 'dis': 'Monster'},
   {'id': 'MAP', 'dis': 'Map'},
 ];
 display_table_row(display_def.map((r) => { return r.dis }));
@@ -49,6 +50,7 @@ drop.addEventListener('drop', function(e) {
 
 function handle_savegame(text, filename) {
   var res = {};
+  var monster = undefined;
 
   // parse data as JSON
   var index = text.indexOf('{');
@@ -83,29 +85,34 @@ function handle_savegame(text, filename) {
       res2[n] = 0;
     }
     res2[n]++;
+    if ('RaceDefName|F' in thing) {
+      var monstername = thing['RaceDefName|F'];
+      if(monstername.substring(0,2) == 'JY') {
+        monster = monstername.substring(2);
+      }
+    }
   });
   Object.keys(res2).forEach((k) => {
     res[k] = res2[k];
   });
   res['MAP'] = data;
-  var rowelements = display_def.map((dis) => {
-    return res[dis.id];
+  res['MONSTER'] = monster;
+  var rowelements = display_def.map((def) => {
+   return res[def.id];
   });
 
-//  console.log(rowelements);
   display_table_row(rowelements);
-//  console.log("Savegame: ");
 //  console.log(res);
 }
 
 function display_table_row(re) {
   var table = document.getElementById('ta');
   var row = table.insertRow(-1);
-  if (re[3] > 1300 && re[4]+re[5] > 400 && re[4] > 200) {
+  if (re[3] > 1200 && re[4] > 200 && re[5] > 200) {
     row.classList.add('top');
   } else {
-    if (re[3] > 1300 || re[4]+re[5] > 600) {
-      if (re[3] > 1600 || re[4]+re[5] > 700) {
+    if (re[3] > 1200 || re[4]+re[5] > 700) {
+      if (re[3] > 1600 || re[4]+re[5] > 900) {
         row.classList.add('veryremarkable');
       } else {
         row.classList.add('remarkable');
@@ -135,7 +142,7 @@ function draw_map(canvas, data) {
   canvas.height = size;
   canvas.style.border = "0px";
 
-  // handle drawing of terrain
+  // Draw Terrain
   var terrain = data.World.world.map['Terrain|F']._hd.Top;
   var colortrans = {
     'Soil': '#78684e',
@@ -163,7 +170,7 @@ function draw_map(canvas, data) {
     }
   });
 
-  // handle drawing of mountains
+  // Draw Mountains over Terrain
   var mountains = {
     'CopperOre': color_to_values('#be5888'),
     'Darksteel': color_to_values('#443d2f'),
@@ -191,13 +198,11 @@ function draw_map(canvas, data) {
       });
     }
   });
-
-  
-  // put map on screen
   ctx.putImageData(img, 0, 0);
 
-  // Draw Ginkgo over landscape
+  // Draw Ginkgo and Monster over Terrain and Mountains
   var g = data.World.thing.SmallPlants['TreeGinkgo_Big'];
+  var monsterpos = undefined;
   if (typeof g == 'undefined') {
     g = [];
   }
@@ -206,10 +211,14 @@ function draw_map(canvas, data) {
     var n = thing['def|P'].N;
     if (n == 'TreeGinkgo_Big') {
       g.push(thing['_hd']['Ns'][2]);
+    } else if ('RaceDefName|F' in thing) {
+      var monstername = thing['RaceDefName|F'];
+      if(monstername.substring(0,2) == 'JY') {
+        monsterpos = thing['_hd']['Ns'][2];
+      }
     }
   });
 
-//  console.log (g);
   ctx.strokeStyle = '#ffffff';
   g.forEach((coord) => {
     var x = coord % size;
@@ -217,8 +226,15 @@ function draw_map(canvas, data) {
     ctx.beginPath();
     ctx.ellipse(x+0.55, y+0.45, 2, 2, 0, 0, 2 * Math.PI);
     ctx.stroke();
-    
   });
+  if (typeof(monsterpos) == 'number') {
+    ctx.strokeStyle = '#00ff00';
+    var x = monsterpos % size;
+    var y = 191-Math.floor(monsterpos / size);
+    ctx.beginPath();
+    ctx.ellipse(x+0.55, y+0.45, 2, 2, 0, 0, 2 * Math.PI);
+    ctx.stroke();
+  }
 }
 
 function put_color(data, coord, color, size) {
