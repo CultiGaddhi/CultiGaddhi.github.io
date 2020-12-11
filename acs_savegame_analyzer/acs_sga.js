@@ -32,7 +32,7 @@ drop.addEventListener('drop', function(e) {
   var files = e.dataTransfer.files; // Array of all files
 
   for (var i=0, file; file=files[i]; i++) {
-    if (file.name.match(/.save$/)) {
+    if (file.name.match(/[.]save$/)) {
       var reader = new FileReader();
 
       reader.onload = (function(file_inner) {
@@ -108,16 +108,18 @@ function handle_savegame(text, filename) {
 function display_table_row(re) {
   var table = document.getElementById('ta');
   var row = table.insertRow(-1);
-  if (re[3] > 1200 && re[4] > 200 && re[5] > 200) {
+  if (re[0] == 'Savegame') {
+    row.classList.add('header');
+  } else if (re[3] > 1200 && re[4] > 200 && re[5] > 200) {
     row.classList.add('top');
-  } else {
-    if (re[3] > 1200 || re[4]+re[5] > 700) {
-      if (re[3] > 1600 || re[4]+re[5] > 900) {
-        row.classList.add('veryremarkable');
-      } else {
-        row.classList.add('remarkable');
-      }
+  } else if (re[3] > 1200 || re[4]+re[5] > 700) {
+    if (re[3] > 1600 || re[4]+re[5] > 900) {
+      row.classList.add('veryremarkable');
+    } else {
+      row.classList.add('remarkable');
     }
+  } else {
+    row.classList.add('normal');
   }
   re.forEach((element) => {
     var c = row.insertCell(-1);
@@ -268,4 +270,10 @@ function color_to_values(color) {
     parseInt(color.substr(3, 2), 16),
     parseInt(color.substr(5, 2), 16)
   ];
+}
+
+function toggle_hide() {
+  var ta = document.getElementById('ta');
+  var cl = 'hidenormal';
+  ta.classList.toggle(cl);
 }

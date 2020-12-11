@@ -40,6 +40,10 @@
       .maptd {
         background-color: #d9c09a;
       }
+      .hidenormal .normal {
+        visibility: collapse;
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -50,6 +54,7 @@
         <h3>Usage: Drag savegame(s) from file-explorer and drop them anywhere on this page.</h3>
         <p>
           The table will automatically be filled with the number of tiles of the terrain and the number of rocks, that are visible on the map.
+          <button onclick="toggle_hide()">Toggle visibility of average maps.</button>
         </p>
         <p>
           Be aware that as of ACS V1.09 maps with the same seed created in "Classic" and "Land of Illusion" may differ regarding objects like mountains or trees.
