@@ -26,6 +26,8 @@ drop.addEventListener('dragover', function(e) {
   e.dataTransfer.dropEffect = 'copy';
 });
 
+var inqueue = 0;
+
 drop.addEventListener('drop', function(e) {
   e.stopPropagation();
   e.preventDefault();
@@ -33,11 +35,17 @@ drop.addEventListener('drop', function(e) {
 
   for (var i=0, file; file=files[i]; i++) {
     if (file.name.match(/[.]save$/)) {
-      var reader = new FileReader();
+      if (inqueue++ == 0) {
+        document.body.style.cursor = "progress";
+      }
 
+      var reader = new FileReader();
       reader.onload = (function(file_inner) {
         return function(e2) {
           handle_savegame(e2.target.result, file_inner);
+          if (--inqueue == 0) {
+            document.body.style.cursor = '';
+          }
         };
       })(file.name.slice(0,-5));
       
@@ -46,6 +54,7 @@ drop.addEventListener('drop', function(e) {
       console.log("Filetype not recognized. Must be a \".save\": " + file.name);
     }
   }
+
 });
 
 function handle_savegame(text, filename) {
