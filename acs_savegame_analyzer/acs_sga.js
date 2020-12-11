@@ -92,10 +92,10 @@ function handle_savegame(text, filename) {
     return res[dis.id];
   });
 
-  console.log(rowelements);
+//  console.log(rowelements);
   display_table_row(rowelements);
-  console.log("Savegame: ");
-  console.log(res);
+//  console.log("Savegame: ");
+//  console.log(res);
 }
 
 function display_table_row(re) {
@@ -124,6 +124,7 @@ function display_table_row(re) {
       c.appendChild(canvas);
       canvas.addEventListener("click", save_map);
       canvas.classList.add('hoverpic');
+      c.classList.add('maptd');
     }
   })
 }
@@ -132,7 +133,7 @@ function draw_map(canvas, data) {
   var size = data.World.world.map['Size|P'];
   canvas.width  = size;
   canvas.height = size;
-  canvas.style.border = "1px solid";
+  canvas.style.border = "0px";
 
   // handle drawing of terrain
   var terrain = data.World.world.map['Terrain|F']._hd.Top;
@@ -208,13 +209,13 @@ function draw_map(canvas, data) {
     }
   });
 
-  console.log (g);
+//  console.log (g);
   ctx.strokeStyle = '#ffffff';
   g.forEach((coord) => {
     var x = coord % size;
     var y = 191-Math.floor(coord / size);
     ctx.beginPath();
-    ctx.ellipse(x, y, 2, 2, 0, 0, 2 * Math.PI);
+    ctx.ellipse(x+0.55, y+0.45, 2, 2, 0, 0, 2 * Math.PI);
     ctx.stroke();
     
   });
