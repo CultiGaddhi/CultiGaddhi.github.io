@@ -15,6 +15,8 @@ var display_def = [
 //  {'id': 'RockJade', 'dis': 'Jade'},
   {'id': 'TreeGinkgo_Big', 'dis': 'Huge Ginkgo'},
 //  {'id': 'FertileSoil', 'dis': 'Fertile Soil'},
+  {'id': 'BOXES', 'dis': 'Boxes'},
+  {'id': 'WATER', 'dis': 'Water'},
   {'id': 'MONSTER', 'dis': 'Monster'},
   {'id': 'MAP', 'dis': 'Map'},
 ];
@@ -64,7 +66,13 @@ function handle_savegame(text, filename) {
   // parse data as JSON
   var index = text.indexOf('{');
   text = text.slice(index);
-  var data = JSON.parse(text); 
+  var data;
+  try {
+    data = JSON.parse(text); 
+  } catch (e) {
+    display_table_row([filename, 'Save File can not be processed. Please enable "Fast Saving" in Game Menu and save again.']);
+    return;
+  }
 
   // extract globals
   res.seed = data.World.world.map['Seed|F'];
@@ -104,6 +112,15 @@ function handle_savegame(text, filename) {
   Object.keys(res2).forEach((k) => {
     res[k] = res2[k];
   });
+  res['BOXES'] = 0;
+  res['WATER'] = 0;
+  ['Box_Cargo', 'Box_Corpse'].forEach((n) => {
+    if (n in res) { res['BOXES'] += res[n]; }
+  });
+  ['DepthWater', 'DepthDepthWater', 'ShallowWater'].forEach((n) => {
+    if (n in res) { res['WATER'] += res[n]; }
+  });
+  res['WATER'] = (res['WATER'] / (res.size * res.size) * 100).toFixed(1) + "%";
   res['MAP'] = data;
   res['MONSTER'] = monster;
   var rowelements = display_def.map((def) => {
@@ -154,31 +171,47 @@ function draw_map(canvas, data) {
   canvas.style.border = "0px";
 
   // Draw Terrain
-  var terrain = data.World.world.map['Terrain|F']._hd.Top;
+  var terrainbase = data.World.world.map['Terrain|F']._hd;
   var colortrans = {
-    'Soil': '#78684e',
-    'LingSoil': '#2e6455',
-    'Mud': '#675c41',
-    'ShallowWater': '#869fa4',
-    'DepthWater': '#627b85',
-    'DepthDepthWater': '#617a84',
-    'StoneLand': '#9e8b5d',
-    'FertileSoil': '#958d54',
-    'WetLand': '#786143',
+    'Soil': '#715C37',
+    'Sand': '#715C37',
+    'Mud': '#61522C',
+    'Void': '#000000',
+    'WetLand': '#6B4B20',
+    'FertileSoil': '#989039',
+    'StoneLand': '#AC9254',
+    'SandLand': '#BA8E1B',
+    'LingSoil': '#006550',
+    'DepthDepthWater': '#4F798C',
+    'DepthWater': '#4F798C',
+    'ShallowWater': '#5C8690',
+    'BloodWater': '#AA0000',
+    'DepthBloodWater': '#800000',
+    'LingWater': '#2EE2E8',
   };
   var ctx = canvas.getContext('2d');
   var img = ctx.createImageData(size, size);
-  var terrainnames = Object.keys(terrain);
-  terrainnames.forEach((terrainname) => {
-    var color = colortrans[terrainname];
-    if (typeof color == 'string') {
-      var color2 = color_to_values(color);
-      terrain[terrainname].forEach((coord) => {
-        put_color(img.data, coord, color2, size);
-      })
-    } else {
-      window.alert('Please notify the developer: unknown terrain ' + terrainname);
-    }
+  ['Top', 'Under'].forEach ((layer) => {
+    var terrain = terrainbase[layer];
+    var terrainnames = Object.keys(terrain);
+    terrainnames.forEach((terrainname) => {
+      var color = colortrans[terrainname];
+      if (typeof color == 'string') {
+        console.log(terrainname);
+        var color2 = color_to_values(color);
+        terrain[terrainname].forEach((coord) => {
+          put_color(img.data, coord, color2, size);
+        })
+      } else if (terrainname.substring(0, 5) == 'Floor') {
+        // ignore them
+      } else {
+        window.alert('Please notify the developer: unknown terrain ' + terrainname);
+        var color2 = color_to_values('#ff0000');
+        terrain[terrainname].forEach((coord) => {
+          put_color(img.data, coord, color2, size);
+        })
+      }
+    });
   });
 
   // Draw Mountains over Terrain
@@ -261,13 +294,12 @@ function put_color(data, coord, color, size) {
 function save_map(seed) {
 
   var pic = this.toDataURL();
-  // create temporary link  
+
   var tmpLink = document.createElement( 'a' );  
   var seed = this.parentElement.parentElement.children[1].innerHTML;
-  tmpLink.download = seed + '.png'; // set the name of the download file 
+  tmpLink.download = seed + '.png'; 
   tmpLink.href = pic;
   
-  // temporarily add link to body and initiate the download  
   document.body.appendChild( tmpLink );  
   tmpLink.click();  
   document.body.removeChild( tmpLink );
@@ -282,7 +314,5 @@ function color_to_values(color) {
 }
 
 function toggle_hide() {
-  var ta = document.getElementById('ta');
-  var cl = 'hidenormal';
-  ta.classList.toggle(cl);
+  document.getElementById('ta').classList.toggle('hidenormal');
 }
