@@ -254,7 +254,7 @@ function draw_map(canvas, data) {
   var bx = born % size;
   var by = 191-Math.floor(born / size);
   ctx.strokeStyle = '#ffffff40';
-  ctx.strokeRect(bx-5+0.5, by-5+0.5, 10, 10);
+  ctx.strokeRect(bx-4+0.5, by-4+0.5, 8, 8);
 
   // Draw Ginkgo and Monster over Terrain and Mountains
   var g = data.World.thing.SmallPlants['TreeGinkgo_Big'];
