@@ -36,25 +36,21 @@ drop.addEventListener('drop', function(e) {
   var files = e.dataTransfer.files; // Array of all files
 
   for (var i=0, file; file=files[i]; i++) {
-    if (file.name.match(/[.]save$/)) {
-      if (inqueue++ == 0) {
-        document.body.style.cursor = "progress";
-      }
-
-      var reader = new FileReader();
-      reader.onload = (function(file_inner) {
-        return function(e2) {
-          handle_savegame(e2.target.result, file_inner);
-          if (--inqueue == 0) {
-            document.body.style.cursor = '';
-          }
-        };
-      })(file.name.slice(0,-5));
-      
-      reader.readAsText(file); // start reading the file data.
-    } else {
-      console.log("Filetype not recognized. Must be a \".save\": " + file.name);
+    if (inqueue++ == 0) {
+      document.body.style.cursor = "progress";
     }
+
+    var reader = new FileReader();
+    reader.onload = (function(file_inner) {
+      return function(e2) {
+        handle_savegame(e2.target.result, file_inner);
+        if (--inqueue == 0) {
+          document.body.style.cursor = '';
+        }
+      };
+    })(file.name);
+
+    reader.readAsText(file); // start reading the file data.
   }
 
 });
@@ -62,6 +58,12 @@ drop.addEventListener('drop', function(e) {
 function handle_savegame(text, filename) {
   var res = {};
   var monster = undefined;
+
+  if (!filename.match(/[.]save$/)) {
+    display_table_row([filename, 'Unrecognized Filetype. Please only upload .save files.']);
+    return;
+  }
+  filename = filename.slice(0,-5)
 
   // parse data as JSON
   var index = text.indexOf('{');
