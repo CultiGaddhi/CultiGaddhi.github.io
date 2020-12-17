@@ -60,7 +60,7 @@ function handle_savegame(text, filename) {
   var monster = undefined;
 
   if (!filename.match(/[.]save$/)) {
-    display_table_row([filename, 'Unrecognized Filetype. Please only upload .save files.']);
+    display_table_row([filename, 'Unrecognized Filetype. Please upload only .save files.']);
     return;
   }
   filename = filename.slice(0,-5)
@@ -130,7 +130,7 @@ function handle_savegame(text, filename) {
   });
 
   display_table_row(rowelements);
-//  console.log(res);
+  console.log(res);
 }
 
 function display_table_row(re) {
