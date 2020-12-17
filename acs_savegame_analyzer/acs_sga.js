@@ -217,15 +217,16 @@ function draw_map(canvas, data) {
   });
 
   // Draw Mountains over Terrain
+  var default_mountain_color = '#443d2f'
   var mountains = {
     'CopperOre': color_to_values('#be5888'),
-    'Darksteel': color_to_values('#443d2f'),
-    'IronOre': color_to_values('#443d2f'),
-    'RockBrown': color_to_values('#443d2f'),
-    'RockCinnabar': color_to_values('#443d2f'),
-    'RockGray': color_to_values('#443d2f'),
-    'RockJade': color_to_values('#443d2f'),
-    'RockMarble': color_to_values('#443d2f'),
+    'Darksteel': color_to_values(default_mountain_color),
+    'IronOre': color_to_values(default_mountain_color),
+    'RockBrown': color_to_values(default_mountain_color),
+    'RockCinnabar': color_to_values(default_mountain_color),
+    'RockGray': color_to_values(default_mountain_color),
+    'RockJade': color_to_values(default_mountain_color),
+    'RockMarble': color_to_values(default_mountain_color),
     'SilverOre': color_to_values('#7a71cf'),
   };
   var things = data.World.thing.Things;
