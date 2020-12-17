@@ -141,7 +141,7 @@ function display_table_row(re) {
   } else if (re[3] > 1200 && re[4] > 200 && re[5] > 200) {
     row.classList.add('top');
   } else if (re[3] > 1200 || re[4]+re[5] > 700) {
-    if (re[3] > 1600 || re[4]+re[5] > 900) {
+    if (re[3] > 1800 || re[4]+re[5] > 900) {
       row.classList.add('veryremarkable');
     } else {
       row.classList.add('remarkable');
