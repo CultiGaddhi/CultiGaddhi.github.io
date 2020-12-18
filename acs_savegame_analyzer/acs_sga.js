@@ -199,7 +199,6 @@ function draw_map(canvas, data) {
     terrainnames.forEach((terrainname) => {
       var color = colortrans[terrainname];
       if (typeof color == 'string') {
-        console.log(terrainname);
         var color2 = color_to_values(color);
         terrain[terrainname].forEach((coord) => {
           put_color(img.data, coord, color2, size);
@@ -246,15 +245,22 @@ function draw_map(canvas, data) {
     }
   });
 
+  // Draw Startposition
+  var born = data.World.world.map['BornCenter|F'];
+  var borncolor = color_to_values('#ffffff');
+  var bornalpha = 0.4;
+  var rsize = 4;
+  for (var i = -rsize; i < rsize; i++) {
+    put_color(img.data, born - rsize * 192 + i, borncolor, size, bornalpha);
+    put_color(img.data, born + rsize * 192 + i + 1, borncolor, size, bornalpha);
+    put_color(img.data, born + i * 192 + rsize, borncolor, size, bornalpha);
+    put_color(img.data, born + (i + 1) * 192 - rsize, borncolor, size, bornalpha);
+  }
+
+
 
   ctx.putImageData(img, 0, 0);
 
-  // Draw Startposition
-  born = data.World.world.map['BornCenter|F'];
-  var bx = born % size;
-  var by = 191-Math.floor(born / size);
-  ctx.strokeStyle = '#ffffff40';
-  ctx.strokeRect(bx-4+0.5, by-4+0.5, 8, 8);
 
   // Draw Ginkgo and Monster over Terrain and Mountains
   var g = data.World.thing.SmallPlants['TreeGinkgo_Big'];
@@ -293,13 +299,13 @@ function draw_map(canvas, data) {
   }
 }
 
-function put_color(data, coord, color, size) {
+function put_color(data, coord, color, size, alpha = 1) {
   var x = coord % size;
   var y = 191-Math.floor(coord / size);
   var index = (size * y + x) * 4;
-  data[index] = color[0];
-  data[index+1] = color[1];
-  data[index+2] = color[2];
+  data[index  ] = Math.floor(data[index  ] * (1 - alpha) + color[0] * alpha);
+  data[index+1] = Math.floor(data[index+1] * (1 - alpha) + color[1] * alpha);
+  data[index+2] = Math.floor(data[index+2] * (1 - alpha) + color[2] * alpha);
   data[index+3] = 255;
 }
 
