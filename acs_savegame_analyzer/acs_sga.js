@@ -284,7 +284,7 @@ function draw_map(canvas, data) {
   ctx.strokeStyle = '#ffffff';
   g.forEach((coord) => {
     var x = coord % size;
-    var y = 191-Math.floor(coord / size);
+    var y = (size - 1)-Math.floor(coord / size);
     ctx.beginPath();
     ctx.ellipse(x+0.55, y+0.45, 2, 2, 0, 0, 2 * Math.PI);
     ctx.stroke();
